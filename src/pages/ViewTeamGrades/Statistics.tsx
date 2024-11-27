@@ -96,19 +96,19 @@ const Statistics: React.FC<StatisticsProps> = ({average}) => {
       )}
         <tr>
           <th style={headerCellStyle}></th>
-          <th style={headerCellStyle} colSpan={2}>Submitted Work</th>
+          <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }} colSpan={2}>Submitted Work</th>
           {dummyauthorfeedback[0].length !== 0 && (
             <th style={headerCellStyle} colSpan={2}>Author Feedback</th>
           )}
           {teammateData.length !== 0 && (
-            <th style={headerCellStyle} colSpan={2}>Teammate Review</th>
+            <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }} colSpan={2}>Teammate Review</th>
           )}
           
         </tr>
         <tr>
           <th style={subHeaderCellStyle}>Contributor</th>
-          <th style={subHeaderCellStyle}>Average</th>
-          <th style={subHeaderCellStyle}>Range</th>
+          <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }}>Average</th>
+          <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }}>Range</th>
           {dummyauthorfeedback[0].length !== 0 && (
             <th style={subHeaderCellStyle}>Average</th>
           )}
@@ -116,10 +116,10 @@ const Statistics: React.FC<StatisticsProps> = ({average}) => {
             <th style={subHeaderCellStyle}>Range</th>
           )}
           {teammateData.length !== 0 && (
-            <th style={subHeaderCellStyle}>Average</th>
+            <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }}>Average</th>
           )}
           {teammateData.length !== 0 && (
-            <th style={subHeaderCellStyle}>Range</th>
+            <th style={{ backgroundColor: 'lightgrey', textAlign: 'center' }}>Range</th>
           )}
           <th style={subHeaderCellStyle}>Final Score</th>
         </tr>
@@ -130,16 +130,16 @@ const Statistics: React.FC<StatisticsProps> = ({average}) => {
                 <br />
               </div>
             </td>
-            <td style={subHeaderCellStyle}>
-              <div style={{textAlign: 'center' }}>
+            <td style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
+              <div style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
                 <div>{average}</div>
                 <a href="#" onClick={(e) => { e.preventDefault(); toggleShowReviews(); }}>
                     {showReviews ? 'Hide Reviews' : 'Show Reviews'}
                 </a><span>({totalReviewsForQuestion1})</span>
               </div>
             </td>
-            <td style={subHeaderCellStyle}>
-              <div style={{textAlign: 'center' }}>
+            <td style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
+              <div style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
                 <div>99.99% - 100%</div>
               </div>
             </td>
@@ -163,15 +163,15 @@ const Statistics: React.FC<StatisticsProps> = ({average}) => {
               )}   
               </div>
             </td>
-            <td style={subHeaderCellStyle}>
-              <div style={{textAlign: 'center' }}>
+            <td style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
+              <div style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
                     {teammateData.length !== 0 && (
                       <div><AverageMarks data={teammateData} /></div>
                     )}
               </div>
             </td>
-            <td style={subHeaderCellStyle}>
-              <div style={{textAlign: 'center' }}>
+            <td style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
+              <div style={{backgroundColor: 'lightgrey', textAlign: 'center' }}>
               {teammateData.length !== 0 && (
                       <div>90% - 100%</div>
                     )}
