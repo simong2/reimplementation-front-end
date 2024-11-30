@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReviewTableRow from './ReviewTableRow'; // Importing the ReviewTableRow component
 import RoundSelector from './RoundSelector'; // Importing the RoundSelector component
 import dummyDataRounds from './Data/heatMapData.json'; // Importing dummy data for rounds
@@ -16,6 +16,11 @@ const ReviewTable: React.FC = () => {
   const [sortOrderRow, setSortOrderRow] = useState<'asc' | 'desc' | 'none'>('none'); // State for row sort order
   const [showToggleQuestion, setShowToggleQuestion] = useState(false); // State for showing question column
   const [open, setOpen] = useState(false); 
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
+
+  useEffect(() => {
+    setTeamMembers(dummyData.members);
+  }, []);
 
   // Function to toggle the sort order for rows
   const toggleSortOrderRow = () => {
@@ -47,6 +52,13 @@ const ReviewTable: React.FC = () => {
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-2">Summary Report: Program 2</h2>
       <h5 className="text-xl font-semibold mb-1">Team: {dummyData.team}</h5>
+      <h5 className="text-2xl font-bold mb-2"> Team members: {teamMembers.map((member, index) => (
+          <span key={index}>
+            {member}
+            {index !== teamMembers.length - 1 && ', '}
+          </span>
+        ))}
+      </h5>
       <h5 className="mb-4">
         Average peer review score:{" "}
         <span>{averagePeerReviewScore}</span>
