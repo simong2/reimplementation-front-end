@@ -3,11 +3,11 @@ import ReviewTableRow from './ReviewTableRow'; // Importing the ReviewTableRow c
 import RoundSelector from './RoundSelector'; // Importing the RoundSelector component
 import dummyDataRounds from './Data/heatMapData.json'; // Importing dummy data for rounds
 import dummyData from './Data/dummyData.json'; // Importing dummy data
-import { calculateAverages, getColorClass } from './utils'; // Importing utility functions
+import { calculateAverages } from './utils'; // Importing utility functions
 import './grades.scss'; // Importing styles
 import { Link } from 'react-router-dom'; // Importing Link from react-router-dom
 import Statistics from './Statistics'; //import statistics component
-import { Button, Collapse } from 'react-bootstrap'; //imporitng collaspe button
+import { Collapse } from 'react-bootstrap'; //imporitng collaspe button
 
 
 // Functional component ReviewTable
@@ -17,7 +17,7 @@ const ReviewTable: React.FC = () => {
   const [showToggleQuestion, setShowToggleQuestion] = useState(false); // State for showing question column
   const [showToggle10WordComments, setShowToggle10WordComments] = useState(false); // State for showing > 10 word comments column
   const [showToggle20WordComments, setShowToggle20WordComments] = useState(false); // State for showing > 20 word comments column
-  const [showSubmission, setShowSubmission] = useState(false); 
+  const [showSubmission, setShowSubmission] = useState(false); // State for showing user submitted links
 
   // Function to toggle the sort order for rows
   const toggleSortOrderRow = () => {
@@ -156,10 +156,10 @@ const ReviewTable: React.FC = () => {
               {sortOrderRow === "desc" && <span> ▼</span>}
             </th>
             {showToggle10WordComments && (
-              <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &gt; 10 Words</th>
+              <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &ge; 10 Words</th>
             )}
             {showToggle20WordComments && (
-              <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &gt; 20 Words</th>
+              <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &ge; 20 Words</th>
             )}
            
             
