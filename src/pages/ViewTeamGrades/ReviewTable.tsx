@@ -17,7 +17,7 @@ const ReviewTable: React.FC = () => {
   const [showToggleQuestion, setShowToggleQuestion] = useState(false); // State for showing question column
   const [showToggle10WordComments, setShowToggle10WordComments] = useState(false); // State for showing > 10 word comments column
   const [showToggle20WordComments, setShowToggle20WordComments] = useState(false); // State for showing > 20 word comments column
-  const [open, setOpen] = useState(false); 
+  const [showSubmission, setShowSubmission] = useState(false); 
 
   // Function to toggle the sort order for rows
   const toggleSortOrderRow = () => {
@@ -65,15 +65,15 @@ const ReviewTable: React.FC = () => {
       </h5>
       <div>Tagging: 97/97</div>
       <div>
-      <a href="#" onClick={(e) => { e.preventDefault(); setOpen(!open); }}>
-          {open ? 'Hide Submission' : 'Show Submission'}
+      <a href="#" onClick={(e) => { e.preventDefault(); setShowSubmission(!showSubmission); }}>
+          {showSubmission ? 'Hide Submission' : 'Show Submission'}
       </a>
       {/* Collapsible content */}
-      <Collapse in={open}>
+      <Collapse in={showSubmission}>
         <div id="example-collapse-text">
           <br></br>
           {/* Render links only when open is true */}
-          {open && (
+          {showSubmission && (
             <>
             <a
               href="https://github.ncsu.edu/Program-2-Ruby-on-Rails/WolfEvents"
@@ -109,6 +109,7 @@ const ReviewTable: React.FC = () => {
       <h4 className="text-xl font-semibold mb-1">Review (Round: {currentRound + 1} of {dummyDataRounds.length}) </h4>
       <br></br>
       <div className='mb-4'>
+        
         <form>
           <h4 className='text-center'>Toggle below 🚀</h4>
           <input
