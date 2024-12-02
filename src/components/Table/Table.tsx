@@ -80,8 +80,8 @@ const Table: React.FC<TableProps> = ({
   const [globalFilter, setGlobalFilter] = useState<string | number>("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibilityState, setColumnVisibilityState] = useState(columnVisibility);
-  const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter); // State for global filter visibility
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null); // Track last updated timestamp
+  const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const selectable = typeof onSelectionChange === "function";
   const onSelectionChangeRef = useRef<any>(onSelectionChange);
@@ -120,24 +120,13 @@ const Table: React.FC<TableProps> = ({
     getPageCount,
   } = table;
 
-  // Used to return early from useEffect() on mount.
-  const firstRenderRef = useRef(true);
-
   useEffect(() => {
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-      return;
+    if (typeof onSelectionChangeRef.current === "function") {
+      const selectedData = table.getSelectedRowModel().flatRows.map((flatRow) => flatRow.original);
+      onSelectionChangeRef.current(selectedData);
     }
-
-    if (typeof onSelectionChangeRef.current !== "function") {
-      return;
-    }
-    const selectedData = table.getSelectedRowModel().flatRows.map((flatRow) => flatRow.original);
-    const handleSelectionChange = onSelectionChangeRef.current;
-    handleSelectionChange?.(selectedData);
   }, [table.getSelectedRowModel().flatRows]);
 
-  // Set initial "Last Updated" timestamp
   useEffect(() => {
     setLastUpdated(new Date());
   }, [initialData]);
@@ -146,12 +135,11 @@ const Table: React.FC<TableProps> = ({
     setIsGlobalFilterVisible(!isGlobalFilterVisible);
   };
 
-  // Export Table Data
   const exportTableData = (format: "csv" | "xlsx") => {
     const tableData = initialData.map((row) => {
       const rowData: Record<string, any> = {};
       columns.forEach((col) => {
-        const accessor = col.id; // Adjust based on column structure
+        const accessor = col.id; // Use column `id` for keys
         if (accessor) {
           rowData[accessor] = row[accessor];
         }
@@ -167,7 +155,6 @@ const Table: React.FC<TableProps> = ({
     XLSX.writeFile(workbook, `table_data.${fileType}`);
   };
 
-  // Refresh Data Function
   const refreshTableData = () => {
     setLastUpdated(new Date());
   };
@@ -184,7 +171,7 @@ const Table: React.FC<TableProps> = ({
           <span style={{ marginLeft: "5px" }} onClick={toggleGlobalFilter}>
             <FaSearch style={{ cursor: "pointer" }} />
             {isGlobalFilterVisible ? " Hide" : " Show"}
-          </span>{" "}
+          </span>
         </Row>
       </Container>
       <Container>
@@ -194,50 +181,40 @@ const Table: React.FC<TableProps> = ({
               <thead className="table-secondary">
                 {getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <th key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder ? null : (
-                            <>
-                              <div
-                                {...{
-                                  className: header.column.getCanSort()
-                                    ? "cursor-pointer select-none"
-                                    : "",
-                                  onClick: header.column.getToggleSortingHandler(),
-                                }}
-                              >
-                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                {{
-                                  asc: " 🔼",
-                                  desc: " 🔽",
-                                }[header.column.getIsSorted() as string] ?? null}
-                              </div>
-                              {showColumnFilter && header.column.getCanFilter() ? (
-                                <ColumnFilter column={header.column} />
-                              ) : null}
-                            </>
-                          )}
-                        </th>
-                      );
-                    })}
+                    {headerGroup.headers.map((header) => (
+                      <th key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : (
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {header.column.getIsSorted()
+                              ? header.column.getIsSorted() === "asc"
+                                ? " 🔼"
+                                : " 🔽"
+                              : null}
+                          </div>
+                        )}
+                      </th>
+                    ))}
                   </tr>
                 ))}
               </thead>
               <tbody>
-                {getRowModel().rows.map((row) => {
-                  return (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
+                {getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
               </tbody>
             </BTable>
             {showPagination && (
@@ -252,8 +229,6 @@ const Table: React.FC<TableProps> = ({
                 getState={getState}
               />
             )}
-
-            {/* Export Buttons */}
             <div style={{ marginTop: "10px" }}>
               <button onClick={() => exportTableData("csv")} className="btn btn-primary me-2">
                 Export to CSV
@@ -262,8 +237,6 @@ const Table: React.FC<TableProps> = ({
                 Export to Excel
               </button>
             </div>
-
-            {/* Feedback Indicators */}
             <div style={{ marginTop: "10px" }}>
               <span>
                 Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
