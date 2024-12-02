@@ -72,6 +72,7 @@
     "@types/jqueryui": "^1.12.21",
     "@types/react-bootstrap": "^0.32.32",
     "@types/react-datepicker": "^4.10.0",
+    "@types/xlsx": "^0.0.35",
     "prettier": "^2.8.7"
   }
 }
