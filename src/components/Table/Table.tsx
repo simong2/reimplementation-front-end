@@ -9,7 +9,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Col, Container, Row, Table as BTable } from "react-bootstrap";
 import ColumnFilter from "./ColumnFilter";
 import GlobalFilter from "./GlobalFilter";
@@ -17,10 +17,6 @@ import Pagination from "./Pagination";
 import RowSelectCheckBox from "./RowSelectCheckBox";
 import { FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
-
-/**
- * @author Ankur Mundra on May, 2023
- */
 
 interface TableProps {
   data: Record<string, any>[];
@@ -46,29 +42,25 @@ const Table: React.FC<TableProps> = ({
   const colsPlusSelectable = useMemo(() => {
     const selectableColumn: any = {
       id: "select",
-      header: ({ table }: any) => {
-        return (
-          <RowSelectCheckBox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
-          />
-        );
-      },
-      cell: ({ row }: any) => {
-        return (
-          <RowSelectCheckBox
-            {...{
-              checked: row.getIsSelected(),
-              disabled: !row.getCanSelect(),
-              indeterminate: row.getIsSomeSelected(),
-              onChange: row.getToggleSelectedHandler(),
-            }}
-          />
-        );
-      },
+      header: ({ table }: any) => (
+        <RowSelectCheckBox
+          {...{
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler(),
+          }}
+        />
+      ),
+      cell: ({ row }: any) => (
+        <RowSelectCheckBox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      ),
       enableSorting: false,
       enableFilter: false,
     };
@@ -83,12 +75,9 @@ const Table: React.FC<TableProps> = ({
   const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const selectable = typeof onSelectionChange === "function";
-  const onSelectionChangeRef = useRef<any>(onSelectionChange);
-
   const table = useReactTable({
     data: initialData,
-    columns: selectable ? colsPlusSelectable : columns,
+    columns: colsPlusSelectable,
     state: {
       sorting,
       globalFilter,
@@ -107,39 +96,11 @@ const Table: React.FC<TableProps> = ({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const {
-    getState,
-    getHeaderGroups,
-    getRowModel,
-    getCanNextPage,
-    getCanPreviousPage,
-    previousPage,
-    nextPage,
-    setPageIndex,
-    setPageSize,
-    getPageCount,
-  } = table;
-
-  useEffect(() => {
-    if (typeof onSelectionChangeRef.current === "function") {
-      const selectedData = table.getSelectedRowModel().flatRows.map((flatRow) => flatRow.original);
-      onSelectionChangeRef.current(selectedData);
-    }
-  }, [table.getSelectedRowModel().flatRows]);
-
-  useEffect(() => {
-    setLastUpdated(new Date());
-  }, [initialData]);
-
-  const toggleGlobalFilter = () => {
-    setIsGlobalFilterVisible(!isGlobalFilterVisible);
-  };
-
   const exportTableData = (format: "csv" | "xlsx") => {
     const tableData = initialData.map((row) => {
       const rowData: Record<string, any> = {};
       columns.forEach((col) => {
-        const accessor = col.id; // Use column `id` for keys
+        const accessor = col.id; // Use column id for keys
         if (accessor) {
           rowData[accessor] = row[accessor];
         }
@@ -155,9 +116,9 @@ const Table: React.FC<TableProps> = ({
     XLSX.writeFile(workbook, `table_data.${fileType}`);
   };
 
-  const refreshTableData = () => {
+  useEffect(() => {
     setLastUpdated(new Date());
-  };
+  }, [initialData]);
 
   return (
     <>
@@ -168,7 +129,7 @@ const Table: React.FC<TableProps> = ({
               <GlobalFilter filterValue={globalFilter} setFilterValue={setGlobalFilter} />
             )}
           </Col>
-          <span style={{ marginLeft: "5px" }} onClick={toggleGlobalFilter}>
+          <span style={{ marginLeft: "5px" }} onClick={() => setIsGlobalFilterVisible((prev) => !prev)}>
             <FaSearch style={{ cursor: "pointer" }} />
             {isGlobalFilterVisible ? " Hide" : " Show"}
           </span>
@@ -179,7 +140,7 @@ const Table: React.FC<TableProps> = ({
           <Col md={tableSize}>
             <BTable striped hover responsive size="sm">
               <thead className="table-secondary">
-                {getHeaderGroups().map((headerGroup) => (
+                {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <th key={header.id} colSpan={header.colSpan}>
@@ -206,7 +167,7 @@ const Table: React.FC<TableProps> = ({
                 ))}
               </thead>
               <tbody>
-                {getRowModel().rows.map((row) => (
+                {table.getRowModel().rows.map((row) => (
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id}>
@@ -219,31 +180,42 @@ const Table: React.FC<TableProps> = ({
             </BTable>
             {showPagination && (
               <Pagination
-                nextPage={nextPage}
-                previousPage={previousPage}
-                canNextPage={getCanNextPage}
-                canPreviousPage={getCanPreviousPage}
-                setPageIndex={setPageIndex}
-                setPageSize={setPageSize}
-                getPageCount={getPageCount}
-                getState={getState}
+                nextPage={table.nextPage}
+                previousPage={table.previousPage}
+                canNextPage={() => table.getCanNextPage()} // Corrected to match expected type
+                canPreviousPage={() => table.getCanPreviousPage()} // Corrected to match expected type
+                setPageIndex={table.setPageIndex}
+                setPageSize={table.setPageSize}
+                getPageCount={table.getPageCount}
+                getState={table.getState}
               />
             )}
             <div style={{ marginTop: "10px" }}>
-              <button onClick={() => exportTableData("csv")} className="btn btn-primary me-2">
-                Export to CSV
-              </button>
-              <button onClick={() => exportTableData("xlsx")} className="btn btn-primary">
-                Export to Excel
-              </button>
-            </div>
-            <div style={{ marginTop: "10px" }}>
-              <span>
+              <div>
+                Export Options:
+                <span
+                  onClick={() => exportTableData("csv")}
+                  style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
+                >
+                  CSV
+                </span>
+                |
+                <span
+                  onClick={() => exportTableData("xlsx")}
+                  style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
+                >
+                  Excel
+                </span>
+              </div>
+              <div style={{ marginTop: "10px" }}>
                 Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
-              </span>
-              <button onClick={refreshTableData} className="btn btn-secondary ms-3">
-                Refresh Data
-              </button>
+                <span
+                  style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
+                  onClick={() => setLastUpdated(new Date())}
+                >
+                  Refresh Now
+                </span>
+              </div>
             </div>
           </Col>
         </Row>
