@@ -16,6 +16,7 @@ import GlobalFilter from "./GlobalFilter";
 import Pagination from "./Pagination";
 import RowSelectCheckBox from "./RowSelectCheckBox";
 import { FaSearch } from "react-icons/fa";
+import * as XLSX from "xlsx";
 
 /**
  * @author Ankur Mundra on May, 2023
@@ -80,6 +81,7 @@ const Table: React.FC<TableProps> = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibilityState, setColumnVisibilityState] = useState(columnVisibility);
   const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter); // State for global filter visibility
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null); // Track last updated timestamp
 
   const selectable = typeof onSelectionChange === "function";
   const onSelectionChangeRef = useRef<any>(onSelectionChange);
@@ -120,11 +122,6 @@ const Table: React.FC<TableProps> = ({
 
   // Used to return early from useEffect() on mount.
   const firstRenderRef = useRef(true);
-  // This useEffect() watches flatRows such that on change it
-  // calls the onSelectionChange() prop. Technically, it calls
-  // the onSelectionChangeRef.current function if it exists.
-
-  const flatRows = table.getSelectedRowModel().flatRows;
 
   useEffect(() => {
     if (firstRenderRef.current) {
@@ -135,13 +132,44 @@ const Table: React.FC<TableProps> = ({
     if (typeof onSelectionChangeRef.current !== "function") {
       return;
     }
-    const selectedData = flatRows.map((flatRow) => flatRow.original);
+    const selectedData = table.getSelectedRowModel().flatRows.map((flatRow) => flatRow.original);
     const handleSelectionChange = onSelectionChangeRef.current;
     handleSelectionChange?.(selectedData);
-  }, [flatRows]);
+  }, [table.getSelectedRowModel().flatRows]);
+
+  // Set initial "Last Updated" timestamp
+  useEffect(() => {
+    setLastUpdated(new Date());
+  }, [initialData]);
 
   const toggleGlobalFilter = () => {
     setIsGlobalFilterVisible(!isGlobalFilterVisible);
+  };
+
+  // Export Table Data
+  const exportTableData = (format: "csv" | "xlsx") => {
+    const tableData = initialData.map((row) => {
+      const rowData: Record<string, any> = {};
+      columns.forEach((col) => {
+        const accessor = col.id; // Adjust based on column structure
+        if (accessor) {
+          rowData[accessor] = row[accessor];
+        }
+      });
+      return rowData;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "TableData");
+
+    const fileType = format === "csv" ? "csv" : "xlsx";
+    XLSX.writeFile(workbook, `table_data.${fileType}`);
+  };
+
+  // Refresh Data Function
+  const refreshTableData = () => {
+    setLastUpdated(new Date());
   };
 
   return (
@@ -224,6 +252,26 @@ const Table: React.FC<TableProps> = ({
                 getState={getState}
               />
             )}
+
+            {/* Export Buttons */}
+            <div style={{ marginTop: "10px" }}>
+              <button onClick={() => exportTableData("csv")} className="btn btn-primary me-2">
+                Export to CSV
+              </button>
+              <button onClick={() => exportTableData("xlsx")} className="btn btn-primary">
+                Export to Excel
+              </button>
+            </div>
+
+            {/* Feedback Indicators */}
+            <div style={{ marginTop: "10px" }}>
+              <span>
+                Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
+              </span>
+              <button onClick={refreshTableData} className="btn btn-secondary ms-3">
+                Refresh Data
+              </button>
+            </div>
           </Col>
         </Row>
       </Container>
