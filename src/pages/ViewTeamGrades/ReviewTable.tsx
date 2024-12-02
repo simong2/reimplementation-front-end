@@ -112,48 +112,46 @@ const ReviewTable: React.FC = () => {
 
       <h4 className="text-xl font-semibold mb-1">Review (Round: {currentRound + 1} of {dummyDataRounds.length}) </h4>
       <br></br>
+
       <div className='mb-4'>
-        
-      <form>
-        {/* <h4 className='text-center'>Toggle below 🚀</h4> */}
-        <h4 className='text-center'><a href="#" onClick={(e) => {e.preventDefault(); setShowToggle(!showToggle); }}>
-          {showToggle ? 'Close toggle' : 'Open Toggle'}
-        </a></h4>
-        <Collapse in={showToggle}>
-        <div>
-          {showToggle && (
-            <>
-            <input
-              type="checkbox"
-              id="toggleQuestion"
-              name="toggleQuestion"
-              checked={showToggleQuestion}
-              onChange={toggleShowQuestion}
-            />
-            <label htmlFor="toggleQuestion"> &nbsp;Toggle Question List</label>
-            {/* Allow checkbox for word count */}
-            <input 
-              type="checkbox" 
-              id="wordCount10"
-              checked={showToggle10WordComments}
-              onChange={toggle10WordComments}
-            />
-            <label htmlFor="wordCount10">&nbsp;Toggle comments over 10 words</label>
-            <input 
-              type="checkbox" 
-              id="wordCount20"
-              checked={showToggle20WordComments}
-              onChange={toggle20WordComments}
-            />
-            <label htmlFor="wordCount20">&nbsp;Toggle comments over 20 words</label>
-            </>
-          )}
-        </div>
-        </Collapse>
-      </form> 
-          
-        
+        <form>
+          <h4 className='text-center'><a href="#" onClick={(e) => {e.preventDefault(); setShowToggle(!showToggle); }}>
+            {showToggle ? 'Close toggle' : 'Open toggle'}
+          </a></h4>
+          <Collapse in={showToggle}>
+          <div>
+            {showToggle && (
+              <>
+              <input
+                type="checkbox"
+                id="toggleQuestion"
+                name="toggleQuestion"
+                checked={showToggleQuestion}
+                onChange={toggleShowQuestion}
+              />
+              <label htmlFor="toggleQuestion"> &nbsp;Toggle Question List</label>
+              {/* Allow checkbox for word count */}
+              <input 
+                type="checkbox" 
+                id="wordCount10"
+                checked={showToggle10WordComments}
+                onChange={toggle10WordComments}
+              />
+              <label htmlFor="wordCount10">&nbsp;Toggle comments over 10 words</label>
+              <input 
+                type="checkbox" 
+                id="wordCount20"
+                checked={showToggle20WordComments}
+                onChange={toggle20WordComments}
+              />
+              <label htmlFor="wordCount20">&nbsp;Toggle comments over 20 words</label>
+              </>
+            )}
+          </div>
+          </Collapse>
+        </form> 
       </div>
+
       <div className="table-container">
         <table className="tbl_heat">
           <thead>
