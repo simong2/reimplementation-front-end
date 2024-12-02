@@ -114,12 +114,11 @@ const ReviewTable: React.FC = () => {
       <br></br>
 
       <div className='mb-4'>
-        <form>
-          <h4 className='text-center'><a href="#" onClick={(e) => {e.preventDefault(); setShowToggle(!showToggle); }}>
-            {showToggle ? 'Close toggle' : 'Open toggle'}
-          </a></h4>
+          <h4 className='toggle-button' onClick={(e) => {e.preventDefault(); setShowToggle(!showToggle); }}>
+            {showToggle ? '↑ Close toggle ↑' : '↓ Open toggle ↓'}
+          </h4>
           <Collapse in={showToggle}>
-          <div>
+          <div className='toggle-pannel'>
             {showToggle && (
               <>
               <input
@@ -149,7 +148,6 @@ const ReviewTable: React.FC = () => {
             )}
           </div>
           </Collapse>
-        </form> 
       </div>
 
       <div className="table-container">
