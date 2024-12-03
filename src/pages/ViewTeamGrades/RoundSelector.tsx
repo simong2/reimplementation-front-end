@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import dummyDataRounds from './Data/heatMapData.json';
-import teamData from './Data/dummyData.json';
 
 interface RoundSelectorProps {
   currentRound: number;
