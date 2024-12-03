@@ -1,49 +1,33 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../components/Table/Table"; // Importing the Table component
-import dummyDataRounds from "./Data/heatMapData.json"; // Importing dummy data for rounds
-import dummyData from "./Data/dummyData.json"; // Importing dummy data
-import RoundSelector from "./RoundSelector"; // Importing RoundSelector
-import Statistics from "./Statistics"; // Importing Statistics component
-import { calculateAverages } from "./utils"; // Importing utility functions
-import { Link } from "react-router-dom"; // Importing Link for navigation
-import { Collapse } from "react-bootstrap"; // Importing Collapse for toggling sections
-import "./grades.scss"; // Importing styles
+import ReviewTableRow from "./ReviewTableRow"; // For heatmap logic
+import RoundSelector from "./RoundSelector"; // For round selection
+import dummyDataRounds from "./Data/heatMapData.json"; // Dummy data for rounds
+import dummyData from "./Data/dummyData.json"; // Dummy data
+import { calculateAverages } from "./utils"; // Utility functions
+import { Collapse, Button } from "react-bootstrap"; // For collapsible content and export
+import * as XLSX from "xlsx"; // For exporting data
+import { Link } from "react-router-dom";
+import "./grades.scss";
 
 const ReviewTable: React.FC = () => {
-  const [currentRound, setCurrentRound] = useState<number>(0); // State for the current round
-  const [teamMembers, setTeamMembers] = useState<string[]>([]); // State for team members
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null); // State for the last updated timestamp
-  const [open, setOpen] = useState(false); // State for collapsible content
+  const [currentRound, setCurrentRound] = useState<number>(0); // Current round state
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null); // Timestamp state
+  const [open, setOpen] = useState(false); // Collapsible state
 
-  // Load team members on component mount
+  // Set initial timestamp on component mount
   useEffect(() => {
-    setTeamMembers(dummyData.members);
-    setLastUpdated(new Date()); // Set initial "Last Updated" timestamp
+    setLastUpdated(new Date());
   }, []);
 
-  // Handle round change
-  const handleRoundChange = (roundIndex: number) => {
-    setCurrentRound(roundIndex);
-    setLastUpdated(new Date()); // Update timestamp when the round changes
+  // Export data to Excel
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(dummyDataRounds[currentRound]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Heatmap Data");
+    XLSX.writeFile(wb, `heatmap_data_${new Date().toISOString()}.xlsx`);
   };
 
-  // Data for the table
-  const currentRoundData = dummyDataRounds[currentRound];
-  const { averagePeerReviewScore } = calculateAverages(currentRoundData, "none");
-  const tableData = currentRoundData.map((row: any, index: number) => ({
-    id: index + 1,
-    questionText: row.questionText,
-    RowAvg: row.RowAvg,
-  }));
-  const columns = [
-    { accessorKey: "id", header: "ID" },
-    { accessorKey: "questionText", header: "Question" },
-    { accessorKey: "RowAvg", header: "Average Score" },
-  ];
-
-  console.log("Current Round Data:", currentRoundData);
-  console.log("Table Columns:", columns);
-  console.log("Table Data:", tableData);
+  const averages = calculateAverages(dummyDataRounds[currentRound], "none");
 
   return (
     <div className="p-4">
@@ -51,15 +35,15 @@ const ReviewTable: React.FC = () => {
       <h5 className="text-xl font-semibold mb-1">Team: {dummyData.team}</h5>
       <h5 className="text-2xl font-bold mb-2">
         Team members:{" "}
-        {teamMembers.map((member, index) => (
+        {dummyData.members.map((member, index) => (
           <span key={index}>
             {member}
-            {index !== teamMembers.length - 1 && ", "}
+            {index !== dummyData.members.length - 1 && ", "}
           </span>
         ))}
       </h5>
       <h5 className="mb-4">
-        Average peer review score: <span>{averagePeerReviewScore}</span>
+        Average peer review score: <span>{averages.averagePeerReviewScore}</span>
       </h5>
       <div>Tagging: 97/97</div>
 
@@ -109,19 +93,33 @@ const ReviewTable: React.FC = () => {
         </Collapse>
       </div>
 
-      {/* Table for review data */}
-      <Table
-        data={tableData}
-        columns={columns}
-        showGlobalFilter={true}
-        showPagination={true}
-      />
+      {/* Export Button */}
+      <Button onClick={exportToExcel} variant="success">
+        Export to Excel
+      </Button>
+
+      {/* Heatmap Table */}
+      <table className="heatmap">
+        <thead>
+          <tr>
+            <th>Question No.</th>
+            {dummyDataRounds[currentRound][0].reviews.map((_: any, index: number) => (
+              <th key={index}>Review {index + 1}</th>
+            ))}
+            <th>Average</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dummyDataRounds[currentRound].map((row: any, index: number) => (
+            <ReviewTableRow key={index} row={row} />
+          ))}
+        </tbody>
+      </table>
 
       {/* Display Last Updated Timestamp */}
       <div style={{ marginTop: "20px" }}>
         <div>
-          Last Updated:{" "}
-          {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
+          Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
         </div>
         <button
           onClick={() => setLastUpdated(new Date())}
@@ -131,25 +129,11 @@ const ReviewTable: React.FC = () => {
         </button>
       </div>
 
-      {/* Round Selector */}
       <RoundSelector
-        currentRound={currentRound}
-        handleRoundChange={handleRoundChange}
-      />
+  currentRound={currentRound}
+  handleRoundChange={(roundIndex: number) => setCurrentRound(roundIndex)}
+/>
 
-      {/* Statistics Component */}
-      <Statistics average={averagePeerReviewScore} />
-
-      {/* Grade and comment section */}
-      <p className="mt-4">
-        <h3>Grade and comment for submission</h3>
-        Grade: {dummyData.grade}
-        <br />
-        Comment: {dummyData.comment}
-        <br />
-        Late Penalty: {dummyData.late_penalty}
-        <br />
-      </p>
 
       <Link to="/">Back</Link>
     </div>
