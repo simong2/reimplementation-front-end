@@ -19,8 +19,8 @@ import { FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
 
 interface TableProps {
-  data: Record<string, any>[];
-  columns: ColumnDef<any, any>[];
+  data: Record<string, any>[]; // Data for the table
+  columns: ColumnDef<any, any>[]; // Columns configuration
   showGlobalFilter?: boolean;
   showColumnFilter?: boolean;
   showPagination?: boolean;
@@ -71,8 +71,10 @@ const Table: React.FC<TableProps> = ({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string | number>("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibilityState, setColumnVisibilityState] = useState(columnVisibility);
-  const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter);
+  const [columnVisibilityState, setColumnVisibilityState] =
+    useState(columnVisibility);
+  const [isGlobalFilterVisible, setIsGlobalFilterVisible] =
+    useState(showGlobalFilter);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const table = useReactTable({
@@ -99,8 +101,8 @@ const Table: React.FC<TableProps> = ({
   const exportTableData = (format: "csv" | "xlsx") => {
     const tableData = initialData.map((row) => {
       const rowData: Record<string, any> = {};
-      columns.forEach((col) => {
-        const accessor = col.id; // Use column id for keys
+      columns.forEach((col: any) => {
+        const accessor = col.accessorKey || col.id; // Adjust for accessorKey or id
         if (accessor) {
           rowData[accessor] = row[accessor];
         }
@@ -126,10 +128,16 @@ const Table: React.FC<TableProps> = ({
         <Row className="mb-md-2">
           <Col md={{ span: 12 }}>
             {isGlobalFilterVisible && (
-              <GlobalFilter filterValue={globalFilter} setFilterValue={setGlobalFilter} />
+              <GlobalFilter
+                filterValue={globalFilter}
+                setFilterValue={setGlobalFilter}
+              />
             )}
           </Col>
-          <span style={{ marginLeft: "5px" }} onClick={() => setIsGlobalFilterVisible((prev) => !prev)}>
+          <span
+            style={{ marginLeft: "5px" }}
+            onClick={() => setIsGlobalFilterVisible((prev) => !prev)}
+          >
             <FaSearch style={{ cursor: "pointer" }} />
             {isGlobalFilterVisible ? " Hide" : " Show"}
           </span>
@@ -153,7 +161,10 @@ const Table: React.FC<TableProps> = ({
                               onClick: header.column.getToggleSortingHandler(),
                             }}
                           >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                             {header.column.getIsSorted()
                               ? header.column.getIsSorted() === "asc"
                                 ? " 🔼"
@@ -171,7 +182,10 @@ const Table: React.FC<TableProps> = ({
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -208,7 +222,8 @@ const Table: React.FC<TableProps> = ({
                 </span>
               </div>
               <div style={{ marginTop: "10px" }}>
-                Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
+                Last Updated:{" "}
+                {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
                 <span
                   style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
                   onClick={() => setLastUpdated(new Date())}

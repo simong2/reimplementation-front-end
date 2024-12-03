@@ -7,6 +7,8 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { persistor, store } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
