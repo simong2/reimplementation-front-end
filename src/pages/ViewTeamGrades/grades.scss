@@ -296,9 +296,12 @@
 
 
 .toggle-button { 
- color: red;
+ color: rgb(226, 23, 23);
  display: inline;
  cursor: pointer; 
+}
+.toggle-button:hover {
+  text-decoration: underline;
 }
 
 .toggle-pannel {
