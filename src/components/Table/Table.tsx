@@ -19,7 +19,9 @@ import { FaSearch } from "react-icons/fa";
 import * as XLSX from "xlsx";
 
 /**
- * @author Ankur Mundra on May, 2023
+ * Table component to display data in a customizable table format.
+ * @author Ankur Mundra
+ * @date May, 2023
  */
 
 interface TableProps {
@@ -79,8 +81,10 @@ const Table: React.FC<TableProps> = ({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState<string | number>("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibilityState, setColumnVisibilityState] = useState(columnVisibility);
-  const [isGlobalFilterVisible, setIsGlobalFilterVisible] = useState(showGlobalFilter);
+  const [columnVisibilityState, setColumnVisibilityState] =
+    useState(columnVisibility);
+  const [isGlobalFilterVisible, setIsGlobalFilterVisible] =
+    useState(showGlobalFilter);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const selectable = typeof onSelectionChange === "function";
@@ -122,7 +126,9 @@ const Table: React.FC<TableProps> = ({
 
   useEffect(() => {
     if (typeof onSelectionChangeRef.current === "function") {
-      const selectedData = table.getSelectedRowModel().flatRows.map((flatRow) => flatRow.original);
+      const selectedData = table.getSelectedRowModel().flatRows.map(
+        (flatRow) => flatRow.original
+      );
       onSelectionChangeRef.current(selectedData);
     }
   }, [table.getSelectedRowModel().flatRows]);
@@ -165,7 +171,10 @@ const Table: React.FC<TableProps> = ({
         <Row className="mb-md-2">
           <Col md={{ span: 12 }}>
             {isGlobalFilterVisible && (
-              <GlobalFilter filterValue={globalFilter} setFilterValue={setGlobalFilter} />
+              <GlobalFilter
+                filterValue={globalFilter}
+                setFilterValue={setGlobalFilter}
+              />
             )}
           </Col>
           <span style={{ marginLeft: "5px" }} onClick={toggleGlobalFilter}>
@@ -192,7 +201,10 @@ const Table: React.FC<TableProps> = ({
                               onClick: header.column.getToggleSortingHandler(),
                             }}
                           >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                             {header.column.getIsSorted()
                               ? header.column.getIsSorted() === "asc"
                                 ? " 🔼"
@@ -210,7 +222,10 @@ const Table: React.FC<TableProps> = ({
                   <tr key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -230,18 +245,28 @@ const Table: React.FC<TableProps> = ({
               />
             )}
             <div style={{ marginTop: "10px" }}>
-              <button onClick={() => exportTableData("csv")} className="btn btn-primary me-2">
+              <button
+                onClick={() => exportTableData("csv")}
+                className="btn btn-primary me-2"
+              >
                 Export to CSV
               </button>
-              <button onClick={() => exportTableData("xlsx")} className="btn btn-primary">
+              <button
+                onClick={() => exportTableData("xlsx")}
+                className="btn btn-primary"
+              >
                 Export to Excel
               </button>
             </div>
             <div style={{ marginTop: "10px" }}>
               <span>
-                Last Updated: {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
+                Last Updated:{" "}
+                {lastUpdated ? lastUpdated.toLocaleString() : "Never"}
               </span>
-              <button onClick={refreshTableData} className="btn btn-secondary ms-3">
+              <button
+                onClick={refreshTableData}
+                className="btn btn-secondary ms-3"
+              >
                 Refresh Data
               </button>
             </div>

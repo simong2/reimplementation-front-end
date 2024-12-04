@@ -10,9 +10,9 @@ describe("Table Component", () => {
   ];
 
   const mockColumns = [
-    { id: "id", header: "ID", accessorKey: "id" },
-    { id: "name", header: "Name", accessorKey: "name" },
-    { id: "age", header: "Age", accessorKey: "age" },
+    { id: "id", header: "ID" },
+    { id: "name", header: "Name" },
+    { id: "age", header: "Age" },
   ];
 
   it("renders export buttons and Last Updated indicator", () => {
