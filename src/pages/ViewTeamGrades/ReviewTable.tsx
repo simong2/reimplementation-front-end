@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReviewTableRow from './ReviewTableRow'; // Importing the ReviewTableRow component
 import RoundSelector from './RoundSelector'; // Importing the RoundSelector component
 import dummyDataRounds from './Data/heatMapData.json'; // Importing dummy data for rounds
@@ -21,7 +21,13 @@ const ReviewTable: React.FC = () => {
   const [showToggle, setShowToggle] = useState(false); // State for showing toggle menu panel
   const [showToggleCustomWordComment, setShowToggleCustomWordComment] = useState(false); // State for showing the custom toggle column
   const [inputValue, setInputValue] = useState(0); // State for holding the number input value for custom toggle
+  
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
 
+  // Fetch team members from the teamData.json file on component mount
+  useEffect(() => {
+    setTeamMembers(dummyData.members);
+  }, []);// Empty dependency array means it runs only once on component mount
 
   // Function to toggle the sort order for rows
   const toggleSortOrderRow = () => {
@@ -81,6 +87,14 @@ const ReviewTable: React.FC = () => {
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-2">Summary Report: Program 2</h2>
       <h5 className="text-xl font-semibold mb-1">Team: {dummyData.team}</h5>
+      {/* Displaying team members */}
+      <h5 className="text-2xl font-bold mb-2"> Team members: {teamMembers.map((member, index) => (
+          <span key={index}>
+            {member}
+            {index !== teamMembers.length - 1 && ', '}
+          </span>
+        ))}
+      </h5>
       <h5 className="mb-4">
         Average peer review score:{" "}
         <span>{averagePeerReviewScore}</span>
