@@ -8,10 +8,12 @@ interface ReviewTableRowProps {
   showToggleQuestion: boolean; // Flag to toggle the question column
   showToggle10WordComments: boolean; // Flag to toggle the > 10 word column
   showToggle20WordComments: boolean; // Flag to toggle the > 20 word column
+  showToggleCustomWordComment: boolean; // Flag to toggle the custom feature
+  customCharacterNumber: number; // 
 }
 
 // Functional component ReviewTableRow
-const ReviewTableRow: React.FC<ReviewTableRowProps> = ({ row, showToggleQuestion, showToggle10WordComments, showToggle20WordComments }) => {
+const ReviewTableRow: React.FC<ReviewTableRowProps> = ({ row, showToggleQuestion, showToggle10WordComments, showToggle20WordComments, showToggleCustomWordComment, customCharacterNumber}) => {
 
 
   return (
@@ -46,14 +48,19 @@ const ReviewTableRow: React.FC<ReviewTableRowProps> = ({ row, showToggleQuestion
       {/* Row Average */}
       <td className="py-2 px-4 text-center">{row.RowAvg.toFixed(2)}</td>
 
-      {/* Toggle > 10 word comments */}
+      {/* Toggle >= 10 word comments */}
       {showToggle10WordComments && (
         <td className='text-center'>{row.reviews.filter(review => review?.comment && review.comment.split(' ').length >= 10).length}</td>
       )}
 
-      {/* Toggle > 20 word comments */}
+      {/* Toggle >= 20 word comments */}
       {showToggle20WordComments && (
         <td className='text-center'>{row.reviews.filter(review => review?.comment && review.comment.split(' ').length >= 20).length}</td>
+      )}
+
+      {/* Toggle >= (input value) character */}
+      {showToggleCustomWordComment && (
+        <td className='text-center'>{row.reviews.filter(review => review?.comment && review.comment.length >= customCharacterNumber).length}</td>
       )}
 
     </tr>

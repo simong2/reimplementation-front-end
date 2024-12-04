@@ -18,10 +18,10 @@ const ReviewTable: React.FC = () => {
   const [showToggle10WordComments, setShowToggle10WordComments] = useState(false); // State for showing > 10 word comments column
   const [showToggle20WordComments, setShowToggle20WordComments] = useState(false); // State for showing > 20 word comments column
   const [showSubmission, setShowSubmission] = useState(false); // State for showing user submitted links
+  const [showToggle, setShowToggle] = useState(false); // State for showing toggle menu panel
+  const [showToggleCustomWordComment, setShowToggleCustomWordComment] = useState(false); // State for showing the custom toggle column
+  const [inputValue, setInputValue] = useState(0); // State for holding the number input value for custom toggle
 
-
-
-  const [showToggle, setShowToggle] = useState(false); // State for showing user submitted links
 
   // Function to toggle the sort order for rows
   const toggleSortOrderRow = () => {
@@ -57,6 +57,24 @@ const ReviewTable: React.FC = () => {
   const toggle20WordComments = () => {
     setShowToggle20WordComments(!showToggle20WordComments);
   };
+
+  //Function to handle custom features
+  const toggleCustomWordComment = () => {
+    // reset the input value each time custom word toggle is unchecked
+    if (showToggleCustomWordComment == false) {
+      setInputValue(0)
+    }
+    setShowToggleCustomWordComment(!showToggleCustomWordComment);
+  };
+
+  // confirm value is in bound 0-1000
+  const confirmInputValue = (num: number) => {
+    if (num < 0 || num > 1000) {
+      setInputValue(0) 
+    } else {
+      setInputValue(num)
+    }
+  }
 
   // JSX rendering of the ReviewTable component
   return (
@@ -144,6 +162,36 @@ const ReviewTable: React.FC = () => {
                 onChange={toggle20WordComments}
               />
               <label htmlFor="wordCount20">&nbsp;Toggle comments over 20 words</label>
+
+              <input 
+              type="checkbox" 
+              id='customWordCount'
+              checked={showToggleCustomWordComment}
+              onChange={toggleCustomWordComment}
+              />
+              <label htmlFor="customWordCount">&nbsp; Toggle for custom feature</label>
+              {showToggleCustomWordComment && (
+                <div>
+                <>
+                <input 
+                  type="number" 
+                  min={0} 
+                  max={1000}
+                  onChange={(event) => { 
+                    /*
+                    if user deletes the input, until they type in a new value 
+                    the input will be a empty string which will be NaN
+                    */
+                      let curr = event.target.value == "" ? 0 : parseInt(event.target.value)
+                      confirmInputValue(curr)
+                    } 
+                  } 
+                  value={inputValue}  
+                />
+                <p>Checking for reviews with &ge; {inputValue} characters</p>
+                </>
+                </div>
+              )}
               </>
             )}
           </div>
@@ -173,8 +221,9 @@ const ReviewTable: React.FC = () => {
             {showToggle20WordComments && (
               <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &ge; 20 Words</th>
             )}
-           
-            
+            {showToggleCustomWordComment && (
+              <th className="py-2 px-4 text-center" style={{ width: '150px' }}>Comments &ge; {inputValue} characters</th>
+            )}
           </tr>
           </thead>
           <tbody>
@@ -185,6 +234,8 @@ const ReviewTable: React.FC = () => {
               showToggleQuestion={showToggleQuestion}
               showToggle10WordComments={showToggle10WordComments}
               showToggle20WordComments={showToggle20WordComments}
+              showToggleCustomWordComment={showToggleCustomWordComment}
+              customCharacterNumber={inputValue}
             />
           ))}
           <tr className="no-bg">
@@ -197,6 +248,7 @@ const ReviewTable: React.FC = () => {
             ))}
             {showToggle10WordComments && <td></td>} {/* Add empty cell if > 10 word toggle is clicked */}
             {showToggle20WordComments && <td></td>} {/* Add empty cell if > 20 word toggle is clicked */}
+            {showToggleCustomWordComment && <td></td>} {/* Add empty cell if custom toggle is clicked */}
           </tr>
           </tbody>
         </table>
@@ -205,13 +257,15 @@ const ReviewTable: React.FC = () => {
       </div>
       {/* view stats functionality */}
       <Statistics average={averagePeerReviewScore}/>
-
-      <p className="mt-4">
+      
+      <div className='mt-4'>
         <h3>Grade and comment for submission</h3>
-        Grade: {dummyData.grade}<br></br>
-        Comment: {dummyData.comment}<br></br>
-        Late Penalty: {dummyData.late_penalty}<br></br>
-      </p>
+        <p>
+          Grade: {dummyData.grade}<br></br>
+          Comment: {dummyData.comment}<br></br>
+          Late Penalty: {dummyData.late_penalty}<br></br>
+        </p>
+      </div>
 
       <Link to="/">Back</Link>
     </div>
