@@ -147,11 +147,10 @@ const ReviewTable: React.FC = () => {
 
       <div className='mb-4'>
           <h5 className='toggle-button' onClick={(e) => {e.preventDefault(); setShowToggle(!showToggle); }}>
-            {/* {showToggle ? '↑ Close toggle ↑' : '↓ Open toggle ↓'} */}
             {showToggle ? '▲ Close Heatmap Options ▲' : '▼ Open Heatmap Options ▼'}
           </h5>
           <Collapse in={showToggle}>
-          <div className='toggle-pannel'>
+          <div className='toggle-pannel' id='toggle-pannel'>
             {showToggle && (
               <>
               <input

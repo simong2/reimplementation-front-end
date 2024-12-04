@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect'; // Import jest-dom for custom assertions
 import Statistics from './Statistics'; // Import the component to test
